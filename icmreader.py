@@ -17,16 +17,16 @@
 # Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
 # Boston, MA  02110-1301, USA.
 
-
-import math, fileinput, struct
+import math, fileinput
 import wavwriter as WW
 import datetime as DT
 
 
 class Config:
     site = 'FCHU' # DAWS, FCHU, MSTK, PINA
-    start_date = '2013-02-01'
-    num_days = 5
+    start_date = '2013-01-01'
+    num_days = 1
+    out_file = "out.wav"
         
 
 class ICMData:
@@ -44,6 +44,7 @@ class ICMData:
         return None
 
 class ICMReader:
+
 
     def __init__(self):
         self.data = ICMData()
@@ -93,10 +94,10 @@ class ICMReader:
 
     def process(self,files):
         rng_N = float(self.data.max_N-self.data.min_N)
-        offset_N= float( (self.data.max_N+self.data.min_N)/2)-self.data.avg_N
+        offset_N= float( (self.data.max_N+self.data.min_N)/2)-(self.data.avg_N)
         rng_E = float(self.data.max_E-self.data.min_E)
-        offset_E = float( (self.data.max_E+self.data.min_E)/2)-self.data.avg_E
-        sw = WW.WavWriter('out.wav')
+        offset_E = float( (self.data.max_E+self.data.min_E)/2)-(self.data.avg_E)
+        sw = WW.WavWriter(Config.out_file)
         result = []
         last_file = ''
         f = fileinput.input(files)
@@ -112,14 +113,37 @@ class ICMReader:
                 v = map(float,line.split()[1:3])
                 val = [ self.process_value(v[0], self.data.min_N, offset_N, rng_N),
                         self.process_value(v[1], self.data.min_E, offset_E, rng_E ) ]
-                result.append( [(math.floor(p*65535)-32768) for p in val] )
+                result.append( [(math.floor(p*32767)) for p in val] )
 
         sw.write_samples(result)
         return None
 
-    def process_value(self, value, minv, offset, rng):
-        v = float(value-minv+offset)/float(rng)
-        v = min(1.0,max(0.0,v))
-        return v
+    # def process_value(self, value, minv, offset, rng):
+    #     pi2 = math.pi/2
+    #     v = float(value-minv+offset)/float(rng)
+    #     v = min(1.0,max(0.0,v))
+    #     # 
+    #     v = math.sin((v**pi2)*pi2 )
+    #     return v
 
-ICMReader()
+    def process_value(self,value,minv,offset,rng):
+        v = 2*(float(value-minv+offset)/float(rng))-1
+        return min(1.0,max(-1.0, v))
+
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("start_date", help="Start date, on the form YYYY-mm-dd, e.g 2012-12-13")
+    parser.add_argument("days", type=int, help="How many days to gather data for")
+    parser.add_argument("-o", "--out", help="Output file. Defaults to 'out.wav'")
+    parser.add_argument("-s", "--site", help="Which site to get data from. Defaults to FCHU")
+
+    args = parser.parse_args()
+
+    if args.out:
+        Config.out_file = args.out
+    if args.site:
+        Config.site = args.site
+    Config.start_date = args.start_date
+    Config.num_days = args.days
+    ICMReader()

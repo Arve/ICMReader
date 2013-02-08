@@ -11,14 +11,22 @@ road).
 
 ## Usage:
 
-1. Unpack the magnetic data files in to a directory without renaming the files.
-2. Edit the `Config` class in icmreader.py so start date, number of days and
-site matches the data set you are creating 3. Run icmreader.py in the directory
-where the data files are contained 4. Done
+Invoke icmreader.py from a directory containing icm data files
+
+    usage: icmreader.py [-h] [-o OUT] [-s SITE] start_date days
+
+    positional arguments:
+      start_date            Start date, on the form YYYY-mm-dd, e.g 2012-12-13
+      days                  How many days to gather data for
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      -o OUT, --out OUT     Output file. Defaults to 'out.wav'
+      -s SITE, --site SITE  Which site to get data from. Defaults to FCHU
 
 After ICMReader has finished running (depending on how big the data set is, this
-can take considerable time), a new file named `out.wav` is added to the same
-directory.
+can take considerable time), the file specified with the -o argument should be 
+created in the same directory as the original
 
 An example generated file is is available [here](https://soundcloud.com/0x61
 /magnetic-january), and is generated from ICM data for the month of January,
