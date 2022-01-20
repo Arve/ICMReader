@@ -28,8 +28,7 @@ After ICMReader has finished running (depending on how big the data set is, this
 can take considerable time), the file specified with the -o argument should be 
 created in the same directory as the original
 
-An example generated file is is available [here](https://soundcloud.com/0x61
-/magnetic-january), and is generated from ICM data for the month of January,
+An example generated file is is available [here](https://soundcloud.com/0x61/magnetic-january), and is generated from ICM data for the month of January,
 2013.
 
 A thank you is extended to I.R. Mann, D.K. Milling and the rest of the CARISMA
